@@ -1,7 +1,7 @@
 class block:
-    
-    def __init__(self) -> None:
-        pass
+    def __init__(self, ) -> None:
+        self.falling = True
+        
     
     def rotate_right(self):
         pass
@@ -14,3 +14,15 @@ class block:
     
     def fall(self):
         pass
+
+block_char = '[]'
+
+shapes = [
+    f'''{{4 * (block_char + '\n')}}''',
+    f''' ''',
+    f''' ''',
+    f''' ''',
+    f''' ''',
+    f''' ''',
+    
+]
