@@ -49,6 +49,8 @@ class block:
     def rotate_right(self):
         new_shape = [[], [], [], []]
         for idx in range(-1, -4, -1):
+            pass
+        
         
     
     def rotate_left(self):
