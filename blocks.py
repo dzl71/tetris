@@ -41,17 +41,13 @@ shapes = {
 }
 
 class block:
-    def __init__(self) -> BLANK:
+    def __init__(self) -> None:
         self.falling = True
         self.name = rnd.choice(list(shapes))
         self.shape = shapes[self.name]
         
     def rotate_right(self):
-        new_shape = [[], [], [], []]
-        for idx in range(-1, -4, -1):
-            pass
-        
-        
+        pass
     
     def rotate_left(self):
         pass
