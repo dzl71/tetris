@@ -105,5 +105,3 @@ class block:
     def move_right(self):
         pass
 
-for item in shapes.values():
-        print(item + '\n')
