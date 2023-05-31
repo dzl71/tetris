@@ -24,7 +24,7 @@ def print_board(board: list[list]):
                 print(tile, end='')
         print()
 
-def insert_block_to_board(board: list[list], block: blk.block):
+def insert_block_to_board(board: list[list], block: blk.block, position_ptr: int):
     pass
 
 def is_row_full(board: list[list], row: int) -> bool:
@@ -44,7 +44,8 @@ def main():
     board = create_board()
     while not board_full(board):
         block = blk.block()
-        insert_block_to_board(board, block)
+        position_ptr = STARTING_POSITION_PTR
+        insert_block_to_board(board, block, position_ptr)
         
         while block.falling:
             
@@ -52,21 +53,27 @@ def main():
             
             if kb.is_pressed('d'):
                 block.move_right()
+                insert_block_to_board(board, block, position_ptr)
                 
             if kb.is_pressed('a'):
                 block.move_left()
+                insert_block_to_board(board, block, position_ptr)
                 
             if kb.is_pressed('s'):
                 block.fall()
+                insert_block_to_board(board, block, position_ptr)
                
             if kb.is_pressed('k'):
                 block.rotate_left()
+                insert_block_to_board(board, block, position_ptr)
                
             if kb.is_pressed('l'):
                 block.rotate_right()
+                insert_block_to_board(board, block, position_ptr)
                 
             time.sleep(1)
             block.move_down()
+            position_ptr += 1
             
 
 
