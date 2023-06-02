@@ -69,7 +69,7 @@ def main():
                     block.move_left(board)
                     print_board(board)
                     
-                if kb.is_pressed('s'):
+                if kb.is_pressed(' '):
                     drop_block(board, block)
                     print_board(board)
                 
