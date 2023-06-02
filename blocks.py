@@ -3,23 +3,23 @@ import os
 
 BOARD_WIDTH = 10
 BOARD_HEIGHT = 20
-BLOCK_CHAR = '1'
 BLANK = "0"
+BLOCK_CHAR = '1'
 
 shapes = {
-    'I' : 3 * (BLOCK_CHAR + '\n') + BLOCK_CHAR,
+    'I' : (3 * (BLOCK_CHAR + '\n') + BLOCK_CHAR, (1, 4)),
     
-    'T' : 3 * BLOCK_CHAR + '\n' + BLANK + BLOCK_CHAR,
+    'T' : (3 * BLOCK_CHAR + '\n' + BLANK + BLOCK_CHAR, (3, 2)),
     
-    'Z' : 2 * BLOCK_CHAR + '\n' + BLANK + 2 * BLOCK_CHAR,
+    'Z' : (2 * BLOCK_CHAR + '\n' + BLANK + 2 * BLOCK_CHAR, (3, 2)),
     
-    'S' : BLANK + 2 * BLOCK_CHAR + '\n' + 2 * BLOCK_CHAR,
+    'S' : (BLANK + 2 * BLOCK_CHAR + '\n' + 2 * BLOCK_CHAR, (3, 2)),
     
-    'L' : 2 * (BLOCK_CHAR + '\n') + 2 * BLOCK_CHAR,
+    'L' : (2 * (BLOCK_CHAR + '\n') + 2 * BLOCK_CHAR, (2, 3)),
     
-    'J' : 2 * (BLANK + BLOCK_CHAR + '\n') + 2 * BLOCK_CHAR,
+    'J' : (2 * (BLANK + BLOCK_CHAR + '\n') + 2 * BLOCK_CHAR, (2, 3)),
     
-    'O' : 2 * BLOCK_CHAR + '\n' + 2 * BLOCK_CHAR
+    'O' : (2 * BLOCK_CHAR + '\n' + 2 * BLOCK_CHAR, (2, 2))
 }
 
 shapes_r = {
@@ -76,9 +76,11 @@ class block:
         self.rotated_right_amount = 0
         self.rotated_left_amount = 0
         self.name = rnd.choice(list(shapes))
-        self.shape = shapes[self.name]
-        self.row_position_ptr: int = starting_ptr[0]
-        self.column_position_ptr: int = starting_ptr[1]
+        self.shape = shapes[self.name][0]
+        self.width = shapes[self.name][1][0]
+        self.height = shapes[self.name][1][1]
+        self.row_position_ptr = starting_ptr[0]
+        self.column_position_ptr = starting_ptr[1]
     
     def insert_into_board(self, board: list[list]):
         row_num = self.row_position_ptr
@@ -101,6 +103,7 @@ class block:
             if blk == '\n':
                 row_num += 1
                 col_num = self.column_position_ptr
+                board[row_num][col_num] = BLANK
             else:
                 board[row_num][col_num] = BLANK
                 col_num += 1
@@ -141,29 +144,23 @@ class block:
     
     def move_down(self, board: list[list]):
         self.remove_from_board(board)
-        self.row_position_ptr += 1
-        try:
-            self.insert_into_board(board)
-        except IndexError:
-            self.row_position_ptr -= 1
+        if self.row_position_ptr + self.height < BOARD_HEIGHT:
+            self.row_position_ptr += 1
+        else:
+            self.falling = False
         self.insert_into_board(board)
     
     def move_left(self, board: list[list]):
         self.remove_from_board(board)
-        self.column_position_ptr -= 1
-        try:
-            self.insert_into_board(board)
-        except IndexError:
-            self.column_position_ptr += 1
+        if self.column_position_ptr > 0:
+            self.column_position_ptr -= 1
         self.insert_into_board(board)
 
     def move_right(self, board: list[list]):
         self.remove_from_board(board)
-        self.column_position_ptr += 1
-        try:
-            self.insert_into_board(board)
-        except IndexError:
-            self.column_position_ptr -= 1
+        if self.width + self.column_position_ptr < BOARD_WIDTH:
+            self.column_position_ptr += 1
         self.insert_into_board(board)
-        
-
+    
+    def is_able_to_fall(self, board: list[list]):
+        pass

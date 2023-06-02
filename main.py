@@ -28,7 +28,7 @@ def print_board(board: list[list]):
                 print(BLOCK, end='')
         print('|')
     print((BOARD_WIDTH  + 1 ) * '--')
-    time.sleep(0.01)
+    time.sleep(0.0875)
 
 def is_row_full(board: list[list], row: int) -> bool:
     for tile in board[row]:
@@ -48,6 +48,7 @@ def drop_block(board: list[list], block: blk.block):
 
 def main():
     board = create_board()
+    block_num = 0
     while not board_full(board):
         block = blk.block(STARTING_POSITION_PTR)
         block.insert_into_board(board)
@@ -72,11 +73,11 @@ def main():
                     drop_block(board, block)
                     print_board(board)
                 
-                if kb.is_pressed('k'):
+                if kb.is_pressed('w'):
                     block.rotate_left(board)
                     print_board(board)
                 
-                if kb.is_pressed('l'):
+                if kb.is_pressed('s'):
                     block.rotate_right(board)
                     print_board(board)
                 
@@ -85,8 +86,6 @@ def main():
                     break
                 
             block.move_down(board)
-            print_board(board)
-            
-
+            print_board(board)        
 
 main()
