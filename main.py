@@ -50,7 +50,7 @@ def main():
             break
         block.insert_into_board(board, 0)
         
-        while block.is_able_to_fall(board):            
+        while block.is_able_to_fall(board):
             start_time = time.perf_counter()
             while True:
                 if kb.is_pressed('d'):
