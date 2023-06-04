@@ -13,22 +13,11 @@ def create_board() -> list[list]:
     for _ in range(BOARD_HEIGHT):
         row = []
         for tile in range(BOARD_WIDTH):
-            row.append(blk.BLANK)
+            row.append((blk.BLANK, 0))
         board.append(row)
     return board
 
-def print_board(board: list[list]):
-    print((BOARD_WIDTH  + 1 ) * '--')
-    for row in board:
-        print('|', end='')
-        for tile in row:
-            if tile == blk.BLANK:
-                print(EMPTY, end='')
-            else:
-                print(BLOCK, end='')
-        print('|')
-    print((BOARD_WIDTH  + 1 ) * '--')
-    time.sleep(0.0875)
+
 
 def is_row_full(board: list[list], row: int) -> bool:
     for tile in board[row]:
@@ -48,44 +37,34 @@ def drop_block(board: list[list], block: blk.block):
 
 def main():
     board = create_board()
-    block_num = 0
+    block_num = 1
     while not board_full(board):
-        block = blk.block(STARTING_POSITION_PTR)
+        block = blk.block(STARTING_POSITION_PTR, block_num)
         block.insert_into_board(board)
-        print_board(board)
         
-        while block.falling:
-            
-            #insert the checker if able to fall and change the block state
-            
+        while block.is_able_to_fall(board):            
             start_time = time.perf_counter()
-            
             while True:
                 if kb.is_pressed('d'):
                     block.move_right(board)
-                    print_board(board)
                     
                 if kb.is_pressed('a'):
                     block.move_left(board)
-                    print_board(board)
                     
                 if kb.is_pressed(' '):
                     drop_block(board, block)
-                    print_board(board)
                 
                 if kb.is_pressed('w'):
                     block.rotate_left(board)
-                    print_board(board)
                 
                 if kb.is_pressed('s'):
                     block.rotate_right(board)
-                    print_board(board)
                 
                 end_time = time.perf_counter()
                 if end_time - start_time >= 1:
                     break
-                
-            block.move_down(board)
-            print_board(board)        
+            if block.is_able_to_fall(board): 
+                block.move_down(board)
+        block_num += 1      
 
 main()
