@@ -10,7 +10,10 @@ BLOCK_CHAR = '1'
 BLOCK = '[]'
 EMPTY = "  "
 
-def print_board(board: list[list]):
+STANDART_INPUT_DELAY = 0.0875
+NO_DELAY = 0
+
+def print_board(board: list[list], delay):
     print((BOARD_WIDTH  + 1 ) * '--')
     for row in board:
         print('|', end='')
@@ -21,7 +24,7 @@ def print_board(board: list[list]):
                 print(BLOCK, end='')
         print('|')
     print((BOARD_WIDTH  + 1 ) * '--')
-    time.sleep(0.0875)
+    time.sleep(delay)
 
 shapes = {
     'I' : (3 * (BLOCK_CHAR + '\n') + BLOCK_CHAR, (1, 4)),
@@ -104,7 +107,7 @@ class block:
         self.width = shapes[self.name][1][0]
         
     
-    def insert_into_board(self, board: list[list]):
+    def insert_into_board(self, board: list[list], delay):
         row_num = self.row_position_ptr
         col_num = self.column_position_ptr
         for blk in self.shape:
@@ -115,7 +118,7 @@ class block:
                 if blk == BLOCK_CHAR:
                     board[row_num][col_num] = (BLOCK_CHAR, self.serial_num)
                 col_num += 1
-        print_board(board)
+        print_board(board, delay)
                  
             
     def remove_from_board(self, board: list[list]):
@@ -146,7 +149,7 @@ class block:
             case 3:
                 self.shape = shapes[self.name],
                 self.rotated_right_amount = 0
-        self.insert_into_board(board)
+        self.insert_into_board(board, NO_DELAY)
     
     def rotate_left(self, board: list[list]):
         self.remove_from_board(board)
@@ -163,7 +166,7 @@ class block:
             case 3:
                 self.shape = shapes[self.name],
                 self.rotated_left_amount = 0
-        self.insert_into_board(board)
+        self.insert_into_board(board, NO_DELAY)
     
     def move_down(self, board: list[list]):
         self.remove_from_board(board)
@@ -171,7 +174,7 @@ class block:
             self.falling = self.is_able_to_fall(board)
         if self.falling:
             self.row_position_ptr += 1
-        self.insert_into_board(board)
+        self.insert_into_board(board, NO_DELAY)
     
     def move_left(self, board: list[list]):
         able_to_go_left: bool = True
@@ -184,7 +187,7 @@ class block:
             able_to_go_left = False
         if able_to_go_left:
             self.column_position_ptr -= 1
-        self.insert_into_board(board)
+        self.insert_into_board(board, STANDART_INPUT_DELAY)
 
     def move_right(self, board: list[list]):
         able_to_move = True
@@ -197,7 +200,7 @@ class block:
             able_to_move = False
         if able_to_move:
             self.column_position_ptr += 1
-        self.insert_into_board(board)
+        self.insert_into_board(board, STANDART_INPUT_DELAY)
     
     def is_able_to_fall(self, board: list[list]) -> bool:
         if self.row_position_ptr + self.height + 1 > BOARD_HEIGHT:

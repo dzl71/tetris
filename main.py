@@ -7,6 +7,7 @@ BOARD_HEIGHT = 20
 STARTING_POSITION_PTR = tuple([0, 4])
 BLOCK = '[]'
 EMPTY = "  "
+STANDART_DELAY = 1
 
 def create_board() -> list[list]:
     board = []
@@ -33,14 +34,15 @@ def board_full(board: list[list]) -> bool:
     return False
 
 def drop_block(board: list[list], block: blk.block):
-    pass
+    while block.is_able_to_fall(board):
+        block.move_down(board)
 
 def main():
     board = create_board()
     block_num = 1
     while not board_full(board):
         block = blk.block(STARTING_POSITION_PTR, block_num)
-        block.insert_into_board(board)
+        block.insert_into_board(board, 0)
         
         while block.is_able_to_fall(board):            
             start_time = time.perf_counter()
@@ -61,7 +63,7 @@ def main():
                     block.rotate_right(board)
                 
                 end_time = time.perf_counter()
-                if end_time - start_time >= 1:
+                if end_time - start_time >= STANDART_DELAY:
                     break
             if block.is_able_to_fall(board): 
                 block.move_down(board)
