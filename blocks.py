@@ -10,6 +10,8 @@ BLOCK_CHAR = '1'
 BLOCK = '[]'
 EMPTY = "  "
 
+CLEAR_TERMINAL = 'clear'
+
 STANDART_INPUT_DELAY = 0.0875
 NO_DELAY = 0
 
@@ -43,57 +45,56 @@ shapes = {
 }
 
 shapes_r = {
-    'I' : 3 * (BLOCK_CHAR + '\n') + BLOCK_CHAR,
+    'I' : (4 * BLOCK_CHAR, (4, 1)),
     
-    'T' : 3 * BLOCK_CHAR + '\n' + BLANK + BLOCK_CHAR,
+    'T' : (BLANK + BLOCK_CHAR + '\n' + 2 * BLOCK_CHAR + '\n' + BLANK + BLOCK_CHAR, (2, 3)),
     
-    'Z' : 2 * BLOCK_CHAR + '\n' + BLANK + 2 * BLOCK_CHAR,
+    'Z' : (BLANK + BLOCK_CHAR + '\n' + 2 * BLOCK_CHAR + '\n' + BLOCK_CHAR + BLANK, (2, 3)),
     
-    'S' : BLANK + 2 * BLOCK_CHAR + '\n' + 2 * BLOCK_CHAR,
+    'S' : (BLOCK_CHAR + BLANK +  '\n' + 2 * BLOCK_CHAR + '\n' + BLANK + BLOCK_CHAR, (2, 3)),
     
-    'L' : 2 * (BLOCK_CHAR + '\n') + 2 * BLOCK_CHAR,
+    'L' : (3 * BLOCK_CHAR + '\n' + BLOCK_CHAR, (3, 2)),
     
-    'J' : 2 * (BLANK + BLOCK_CHAR + '\n') + 2 * BLOCK_CHAR,
+    'J' : (BLOCK_CHAR + '\n' + 3 * BLOCK_CHAR, (3, 2)),
     
-    'O' : 2 * BLOCK_CHAR + '\n' + 2 * BLOCK_CHAR
+    'O' : (2 * BLOCK_CHAR + '\n' + 2 * BLOCK_CHAR, (2, 2))
 }
 
 shapes_l = {
-    'I' : 3 * (BLOCK_CHAR + '\n') + BLOCK_CHAR,
+    'I' : (3 * (BLOCK_CHAR + '\n') + BLOCK_CHAR, (1, 4)),
     
-    'T' : 3 * BLOCK_CHAR + '\n' + BLANK + BLOCK_CHAR,
+    'T' : (3 * BLOCK_CHAR + '\n' + BLANK + BLOCK_CHAR, (3, 2)),
     
-    'Z' : 2 * BLOCK_CHAR + '\n' + BLANK + 2 * BLOCK_CHAR,
+    'Z' : (2 * BLOCK_CHAR + '\n' + BLANK + 2 * BLOCK_CHAR, (3, 2)),
     
-    'S' : BLANK + 2 * BLOCK_CHAR + '\n' + 2 * BLOCK_CHAR,
+    'S' : (BLANK + 2 * BLOCK_CHAR + '\n' + 2 * BLOCK_CHAR, (3, 2)),
     
-    'L' : 2 * (BLOCK_CHAR + '\n') + 2 * BLOCK_CHAR,
+    'L' : (2 * (BLOCK_CHAR + '\n') + 2 * BLOCK_CHAR, (2, 3)),
     
-    'J' : 2 * (BLANK + BLOCK_CHAR + '\n') + 2 * BLOCK_CHAR,
+    'J' : (2 * (BLANK + BLOCK_CHAR + '\n') + 2 * BLOCK_CHAR, (2, 3)),
     
-    'O' : 2 * BLOCK_CHAR + '\n' + 2 * BLOCK_CHAR
+    'O' : (2 * BLOCK_CHAR + '\n' + 2 * BLOCK_CHAR, (2, 2))
 }
 
 shapes_180 =  {
-    'I' : 3 * (BLOCK_CHAR + '\n') + BLOCK_CHAR,
+    'I' : (3 * (BLOCK_CHAR + '\n') + BLOCK_CHAR, (1, 4)),
     
-    'T' : 3 * BLOCK_CHAR + '\n' + BLANK + BLOCK_CHAR,
+    'T' : (3 * BLOCK_CHAR + '\n' + BLANK + BLOCK_CHAR, (3, 2)),
     
-    'Z' : 2 * BLOCK_CHAR + '\n' + BLANK + 2 * BLOCK_CHAR,
+    'Z' : (2 * BLOCK_CHAR + '\n' + BLANK + 2 * BLOCK_CHAR, (3, 2)),
     
-    'S' : BLANK + 2 * BLOCK_CHAR + '\n' + 2 * BLOCK_CHAR,
+    'S' : (BLANK + 2 * BLOCK_CHAR + '\n' + 2 * BLOCK_CHAR, (3, 2)),
     
-    'L' : 2 * (BLOCK_CHAR + '\n') + 2 * BLOCK_CHAR,
+    'L' : (2 * (BLOCK_CHAR + '\n') + 2 * BLOCK_CHAR, (2, 3)),
     
-    'J' : 2 * (BLANK + BLOCK_CHAR + '\n') + 2 * BLOCK_CHAR,
+    'J' : (2 * (BLANK + BLOCK_CHAR + '\n') + 2 * BLOCK_CHAR, (2, 3)),
     
-    'O' : 2 * BLOCK_CHAR + '\n' + 2 * BLOCK_CHAR
+    'O' : (2 * BLOCK_CHAR + '\n' + 2 * BLOCK_CHAR, (2, 2))
 }
 
 class block:
     def __init__(self, starting_ptr: tuple[int, int], serial_num: int) -> None:
-        self.rotated_right_amount = 0
-        self.rotated_left_amount = 0
+        self.direction: str = 'up'
         
         self.name = rnd.choice(list(shapes))
         self.shape = shapes[self.name][0]
@@ -106,6 +107,10 @@ class block:
         self.column_position_ptr = starting_ptr[1]
         self.width = shapes[self.name][1][0]
         
+    def change_shape(self, new_shape: dict[str, tuple[str, tuple[int, int]]]):
+        self.shape = new_shape[self.name][0]
+        self.width = new_shape[self.name][1][0]
+        self.height = new_shape[self.name][1][1]
     
     def insert_into_board(self, board: list[list], delay):
         row_num = self.row_position_ptr
@@ -122,7 +127,7 @@ class block:
                  
             
     def remove_from_board(self, board: list[list]):
-        os.system('clear')
+        os.system(CLEAR_TERMINAL)
         row_num = self.row_position_ptr
         col_num = self.column_position_ptr
         for blk in self.shape:
@@ -136,37 +141,37 @@ class block:
         
     def rotate_right(self, board: list[list]):
         self.remove_from_board(board)
-        match self.rotated_right_amount:
-            case 0:
-                self.shape = shapes_r[self.name]
-                self.rotated_right_amount = 1,
-            case 1: 
-                self.shape = shapes_180[self.name],
-                self.rotated_right_amount = 2
-            case 2:
-                self.shape = shapes_l[self.name],
-                self.rotated_right_amount = 3,
-            case 3:
-                self.shape = shapes[self.name],
-                self.rotated_right_amount = 0
-        self.insert_into_board(board, NO_DELAY)
+        match self.direction:
+            case 'up':
+                self.change_shape(shapes_r)
+                self.direction = 'right'
+            case 'right': 
+                self.change_shape(shapes_180)
+                self.direction = 'down'
+            case 'down':
+                self.change_shape(shapes_l)
+                self.direction = 'left'
+            case 'left':
+                self.change_shape(shapes)
+                self.direction = 'up'
+        self.insert_into_board(board, STANDART_INPUT_DELAY)
     
     def rotate_left(self, board: list[list]):
         self.remove_from_board(board)
-        match self.rotated_left_amount:
-            case 0:
-                self.shape = shapes_l[self.name]
-                self.rotated_left_amount = 1,
-            case 1: 
-                self.shape = shapes_180[self.name],
-                self.rotated_left_amount = 2
-            case 2:
-                self.shape = shapes_r[self.name],
-                self.rotated_left_amount = 3,
-            case 3:
-                self.shape = shapes[self.name],
-                self.rotated_left_amount = 0
-        self.insert_into_board(board, NO_DELAY)
+        match self.direction:
+            case 'up':
+                self.change_shape(shapes_r)
+                self.direction = 'left'
+            case 'right': 
+                self.change_shape(shapes_180)
+                self.direction = 'up'
+            case 'down':
+                self.change_shape(shapes_l)
+                self.direction = 'right'
+            case 'left':
+                self.change_shape(shapes)
+                self.direction = 'down'
+        self.insert_into_board(board, STANDART_INPUT_DELAY)
     
     def move_down(self, board: list[list]):
         self.remove_from_board(board)
