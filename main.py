@@ -49,36 +49,22 @@ def row_is_full(board: list[list], row: int) -> bool:
 
 def delete_row(board: list[list], row_num: int):
     """
-    The function deletes a row from a board and then drops the remaining rows down.
+    This function deletes a row from a given board by setting all tiles in that row to blank and
+    shifting all rows above it down by one.
     
     :param board: A 2D list representing the game board, where each element is a tuple containing a
-    block type and its color
+    block type and a rotation value
     :type board: list[list]
     :param row_num: The row number of the board that needs to be deleted
     :type row_num: int
     """
     for tile_idx in range(BOARD_WIDTH):
         board[row_num][tile_idx] = (blk.BLANK, 0)
-    drop_rows(board, row_num)
-
-def drop_rows(board: list[list], drop_to_row: int):
-    """
-    The function drops rows in a board by shifting the rows above the specified row downwards.
-    
-    :param board: The board parameter is a 2-dimensional list that represents the game board. Each
-    element in the list represents a row on the board, and each row is itself a list of elements
-    representing the tiles in that row
-    :type board: list[list]
-    :param drop_to_row: The parameter `drop_to_row` is an integer that represents the row number to
-    which the rows of the board will be dropped. The function will move all the rows above this row down
-    by one position and replace the contents of the row at `drop_to_row` with the contents of the row
-    above
-    :type drop_to_row: int
-    """
-    while drop_to_row > 0:
+    while row_num > 0:
         for tile_idx in range(BOARD_WIDTH):
-            board[drop_to_row][tile_idx] = board[drop_to_row - 1][tile_idx]
-        drop_to_row -= 1
+            board[row_num] = board[row_num - 1]
+        row_num -= 1
+
 
 def board_full(board: list[list], current_block_serial_num: int) -> bool:
     """
