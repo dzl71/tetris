@@ -84,7 +84,7 @@ def board_full(board: list[list], current_block_serial_num: int) -> bool:
     block serial number, the function returns True, indicating that the board is full. Otherwise, it
     returns False, indicating that the board is not full.
     """
-    for tile in board[0]:
+    for tile in board[1]:
         if 0 < tile[1] < current_block_serial_num:
             return True
     return False
