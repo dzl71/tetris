@@ -48,21 +48,12 @@ def row_is_full(board: list[list], row: int) -> bool:
     return True
 
 def delete_row(board: list[list], row_num: int):
-    """
-    This function deletes a row from a given board by setting all tiles in that row to blank and
-    shifting all rows above it down by one.
-    
-    :param board: A 2D list representing the game board, where each element is a tuple containing a
-    block type and a rotation value
-    :type board: list[list]
-    :param row_num: The row number of the board that needs to be deleted
-    :type row_num: int
-    """
-    for tile_idx in range(BOARD_WIDTH):
-        board[row_num][tile_idx] = (blk.BLANK, 0)
+    # `board[row_num] = board[0]` is replacing the row at index `row_num` with the first row of the
+    # board. This is because when a row is deleted, the rows above it need to be shifted down, and the
+    # top row needs to be replaced with a new empty row.
+    board[row_num] = board[0]
     while row_num > 0:
-        for tile_idx in range(BOARD_WIDTH):
-            board[row_num] = board[row_num - 1]
+        board[row_num] = board[row_num - 1]
         row_num -= 1
 
 
