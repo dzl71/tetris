@@ -68,21 +68,20 @@ def delete_row(board: list[list], row_num: int):
 
 def board_full(board: list[list], current_block_serial_num: int) -> bool:
     """
-    The function checks if the board is full by iterating through the first row of the board and
-    checking if any tile has a non-zero value in the second index and a value less than the current
-    block serial number.
+    The function checks if the board is full by iterating through the tiles of the current block and
+    returning True if any of them have a non-zero value less than the current block's serial number.
     
-    :param board: A 2D list representing the game board. Each element in the list is a tuple
-    representing a tile on the board. The first element of the tuple is the value of the tile (0 if it
-    is empty, otherwise the serial number of the block occupying the tile), and the second element is
+    :param board: A 2D list representing the game board. Each element in the list is a list representing
+    a row on the board. Each element in the row list is a tuple representing a tile on the board. The
+    first element of the tuple is the value of the tile (0 if empty, 1
     :type board: list[list]
     :param current_block_serial_num: The current_block_serial_num parameter is an integer representing
     the serial number of the current block being played on the board
     :type current_block_serial_num: int
-    :return: a boolean value indicating whether the board is full or not. If there is any tile in the
-    first row of the board that has a non-zero value in the second index and is less than the current
-    block serial number, the function returns True, indicating that the board is full. Otherwise, it
-    returns False, indicating that the board is not full.
+    :return: a boolean value indicating whether the game board is full or not. If there is any tile in
+    the second row of the board that has a non-zero value in the second element of its tuple and that
+    value is less than the current block serial number, the function returns True. Otherwise, it returns
+    False.
     """
     for tile in board[1]:
         if 0 < tile[1] < current_block_serial_num:
