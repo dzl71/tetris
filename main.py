@@ -104,8 +104,8 @@ def drop_block(board: list[list], block: blk.block):
 
 def main():
     """
-    This function runs a game loop where it creates a board, generates blocks, and allows the player to
-    move and rotate the blocks until they reach the bottom or fill up the board.
+    This function runs a Tetris game, where the player controls falling blocks using keyboard inputs and
+    earns points for completing lines.
     """
     board = create_board()
     block_num = 1
