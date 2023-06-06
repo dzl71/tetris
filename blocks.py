@@ -65,7 +65,7 @@ shapes_r = {
     
     'T' : (BLANK + BLOCK_CHAR + '\n' + 2 * BLOCK_CHAR + '\n' + BLANK + BLOCK_CHAR, (2, 3)),
     
-    'Z' : (BLANK + BLOCK_CHAR + '\n' + 2 * BLOCK_CHAR + '\n' + BLOCK_CHAR + BLANK, (2, 3)),
+    'Z' : (BLANK + BLOCK_CHAR + '\n' + 2 * BLOCK_CHAR + '\n' + BLOCK_CHAR, (2, 3)),
     
     'S' : (BLOCK_CHAR + BLANK +  '\n' + 2 * BLOCK_CHAR + '\n' + BLANK + BLOCK_CHAR, (2, 3)),
     
@@ -77,17 +77,17 @@ shapes_r = {
 }
 
 shapes_l = {
-    'I' : (3 * (BLOCK_CHAR + '\n') + BLOCK_CHAR, (1, 4)),
+    'I' : (4 * BLOCK_CHAR, (4, 1)),
     
-    'T' : (3 * BLOCK_CHAR + '\n' + BLANK + BLOCK_CHAR, (3, 2)),
+    'T' : (BLOCK_CHAR + BLANK + '\n' + 2 * BLOCK_CHAR + '\n' + BLOCK_CHAR + BLANK, (2, 3)),
     
-    'Z' : (2 * BLOCK_CHAR + '\n' + BLANK + 2 * BLOCK_CHAR, (3, 2)),
+    'Z' : (BLANK + BLOCK_CHAR + '\n' + 2 * BLOCK_CHAR + '\n' + BLOCK_CHAR, (2, 3)),
     
-    'S' : (BLANK + 2 * BLOCK_CHAR + '\n' + 2 * BLOCK_CHAR, (3, 2)),
+    'S' : (BLOCK_CHAR + BLANK +  '\n' + 2 * BLOCK_CHAR + '\n' + BLANK + BLOCK_CHAR, (2, 3)),
     
-    'L' : (2 * (BLOCK_CHAR + '\n') + 2 * BLOCK_CHAR, (2, 3)),
+    'L' : (2 * BLANK + BLOCK_CHAR + '\n' + 3 * BLOCK_CHAR, (3, 2)),
     
-    'J' : (2 * (BLANK + BLOCK_CHAR + '\n') + 2 * BLOCK_CHAR, (2, 3)),
+    'J' : (3 * BLOCK_CHAR + '\n' + 2 * BLANK + BLOCK_CHAR, (3, 2)),
     
     'O' : (2 * BLOCK_CHAR + '\n' + 2 * BLOCK_CHAR, (2, 2))
 }
@@ -95,15 +95,15 @@ shapes_l = {
 shapes_180 =  {
     'I' : (3 * (BLOCK_CHAR + '\n') + BLOCK_CHAR, (1, 4)),
     
-    'T' : (3 * BLOCK_CHAR + '\n' + BLANK + BLOCK_CHAR, (3, 2)),
+    'T' : (BLANK + BLOCK_CHAR + '\n' + 3 * BLOCK_CHAR, (3, 2)),
     
     'Z' : (2 * BLOCK_CHAR + '\n' + BLANK + 2 * BLOCK_CHAR, (3, 2)),
     
     'S' : (BLANK + 2 * BLOCK_CHAR + '\n' + 2 * BLOCK_CHAR, (3, 2)),
     
-    'L' : (2 * (BLOCK_CHAR + '\n') + 2 * BLOCK_CHAR, (2, 3)),
+    'L' : (2 * BLOCK_CHAR + '\n' + 2 * (BLANK + BLOCK_CHAR + '\n'), (2, 3)),
     
-    'J' : (2 * (BLANK + BLOCK_CHAR + '\n') + 2 * BLOCK_CHAR, (2, 3)),
+    'J' : (2 * BLOCK_CHAR + '\n' + 2 * (BLOCK_CHAR + '\n'), (2, 3)),
     
     'O' : (2 * BLOCK_CHAR + '\n' + 2 * BLOCK_CHAR, (2, 2))
 }
@@ -226,17 +226,17 @@ class block:
         self.remove_from_board(board)
         match self.direction:
             case 'up':
-                self.change_shape(shapes_r)
-                self.direction = 'left'
-            case 'right': 
-                self.change_shape(shapes_180)
-                self.direction = 'up'
-            case 'down':
                 self.change_shape(shapes_l)
-                self.direction = 'right'
-            case 'left':
-                self.change_shape(shapes)
+                self.direction = 'left'
+            case 'left': 
+                self.change_shape(shapes_180)
                 self.direction = 'down'
+            case 'down':
+                self.change_shape(shapes_r)
+                self.direction = 'right'
+            case 'right':
+                self.change_shape(shapes)
+                self.direction = 'up'
         self.insert_into_board(board, STANDART_INPUT_DELAY)
     
     def move_down(self, board: list[list]):
