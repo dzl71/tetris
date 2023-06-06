@@ -1,6 +1,6 @@
 import blocks as blk
 import time
-import keyboard as kb  # it resolves the problem of the input
+import keyboard as kb
 
 BOARD_WIDTH = 10
 BOARD_HEIGHT = 20
