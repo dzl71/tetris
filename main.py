@@ -7,12 +7,13 @@ BOARD_HEIGHT = 20
 STARTING_POSITION_PTR = tuple([0, 4])
 BLOCK = '[]'
 EMPTY = "  "
-STANDART_DELAY = 1
 
 TETRIS = 800
 TRIPLE_LINE = 500
 DOUBLE_LINE = 300
 ONE_LINE = 100
+
+STARTING_BLOCK_SPEED = 1 # in seconds
 
 def create_board() -> list[list]:
     """
@@ -108,6 +109,7 @@ def main():
     """
     board = create_board()
     block_num = 1
+    fall_delay = STARTING_BLOCK_SPEED
     while True:
         block = blk.block(STARTING_POSITION_PTR, block_num)
         if board_full(board, block_num):
@@ -134,7 +136,7 @@ def main():
                     block.rotate_right(board)
                 
                 end_time = time.perf_counter()
-                if end_time - start_time >= STANDART_DELAY:
+                if end_time - start_time >= fall_delay:
                     break
             if block.is_able_to_fall(board): 
                 block.move_down(board)
@@ -156,4 +158,14 @@ def main():
                 blk.score += TETRIS
             case _: 
                 blk.score += 0
+        if blk.score > 10_000:
+            fall_delay *= 0.7
+        elif blk.score > 80_000:
+            fall_delay *= 0.5
+        elif blk.score > 175_000:
+            fall_delay *= 0.5
+        elif blk.score > 500_000:
+            fall_delay *= 0.5
+        elif blk.score > 1_500_000:
+            fall_delay *= 0.01
 main()
