@@ -16,7 +16,7 @@ STANDART_INPUT_DELAY = 0.0875
 NO_DELAY = 0
 
 
-score = 20_000
+score = 0
 
 def print_board(board: list[list], delay, score):
     """
