@@ -43,12 +43,12 @@ def print_board(board: list[list], delay, score):
     print(score)
     time.sleep(delay)
 
-# The `shapes` dictionary contains the shapes of the different types of blocks that can appear in the
+# The `shapes_up` dictionary contains the shapes_up of the different types of blocks that can appear in the
 # game. Each key in the dictionary represents a different block shape, and the value associated with
 # each key is a tuple containing two elements: the first element is a string representing the shape of
 # the block, and the second element is a tuple containing the dimensions of the block (width and
 # height).
-shapes = {
+shapes_up = {
     'I' : (3 * (BLOCK_CHAR + '\n') + BLOCK_CHAR, (1, 4)),
     
     'T' : (3 * BLOCK_CHAR + '\n' + BLANK + BLOCK_CHAR, (3, 2)),
@@ -64,7 +64,7 @@ shapes = {
     'O' : (2 * BLOCK_CHAR + '\n' + 2 * BLOCK_CHAR, (2, 2))
 }
 
-shapes_r = {
+shapes_right = {
     'I' : (4 * BLOCK_CHAR, (4, 1)),
     
     'T' : (BLANK + BLOCK_CHAR + '\n' + 2 * BLOCK_CHAR + '\n' + BLANK + BLOCK_CHAR, (2, 3)),
@@ -80,7 +80,7 @@ shapes_r = {
     'O' : (2 * BLOCK_CHAR + '\n' + 2 * BLOCK_CHAR, (2, 2))
 }
 
-shapes_l = {
+shapes_left = {
     'I' : (4 * BLOCK_CHAR, (4, 1)),
     
     'T' : (BLOCK_CHAR + BLANK + '\n' + 2 * BLOCK_CHAR + '\n' + BLOCK_CHAR + BLANK, (2, 3)),
@@ -96,7 +96,7 @@ shapes_l = {
     'O' : (2 * BLOCK_CHAR + '\n' + 2 * BLOCK_CHAR, (2, 2))
 }
 
-shapes_180 =  {
+shapes_down =  {
     'I' : (3 * (BLOCK_CHAR + '\n') + BLOCK_CHAR, (1, 4)),
     
     'T' : (BLANK + BLOCK_CHAR + '\n' + 3 * BLOCK_CHAR, (3, 2)),
@@ -118,8 +118,8 @@ class block:
         # block object, including its direction, name, shape, serial number, falling status, row and
         # column position pointers, height, and width. The `self.direction` attribute is set to `'up'`
         # by default, indicating that the block is initially facing upwards. The `self.name` attribute
-        # is randomly chosen from the keys of the `shapes` dictionary, which contains the different
-        # block shapes. The `self.shape` attribute is set to the shape of the block corresponding to
+        # is randomly chosen from the keys of the `shapes_up` dictionary, which contains the different
+        # block shapes_up. The `self.shape` attribute is set to the shape of the block corresponding to
         # its name. The `self.serial_num` attribute is set to the serial number of the block, which is
         # used to distinguish it from other blocks on the board. The `self.falling` attribute is set
         # to `True` by default, indicating that the block is initially falling. The
@@ -128,16 +128,16 @@ class block:
         # attributes are set to the dimensions of the block's shape.
         self.direction: str = 'up'
         
-        self.name = rnd.choice(list(shapes))
-        self.shape = shapes[self.name][0]
+        self.name = rnd.choice(list(shapes_up))
+        self.shape = shapes_up[self.name][0]
         self.serial_num = serial_num
         self.falling = True
                 
         self.row_position_ptr = starting_ptr[0]
-        self.height = shapes[self.name][1][1]
+        self.height = shapes_up[self.name][1][1]
         
         self.column_position_ptr = starting_ptr[1]
-        self.width = shapes[self.name][1][0]
+        self.width = shapes_up[self.name][1][0]
         
     def change_shape(self, new_shape: dict[str, tuple[str, tuple[int, int]]]):
         """
@@ -192,49 +192,77 @@ class block:
         
     def rotate_right(self, board: list[list]):
         """
-        This function rotates a shape to the right on a game board.
+        This function rotates the current shape to the right and updates its direction accordingly.
         
-        :param board: a 2D list representing the game board where the tetromino will be placed and moved
-        on
+        :param board: The board parameter is a 2D list that represents the game board. Each element in
+        the list represents a cell on the board, and can contain either a block or an empty space. The
+        rotate_right method is used to rotate the current shape to the right on the board
         :type board: list[list]
         """
         self.remove_from_board(board)
         match self.direction:
             case 'up':
-                self.change_shape(shapes_r)
-                self.direction = 'right'
+                self.change_shape(shapes_right)
+                if self.is_able_to_go_right(board):
+                    self.direction = 'right'
+                else:
+                    self.change_shape(shapes_up)
             case 'right': 
-                self.change_shape(shapes_180)
-                self.direction = 'down'
+                self.change_shape(shapes_down)
+                if self.is_able_to_fall(board) and self.is_able_to_go_right(board):
+                    self.direction = 'down'
+                else:
+                    self.change_shape(shapes_right)
             case 'down':
-                self.change_shape(shapes_l)
-                self.direction = 'left'
+                self.change_shape(shapes_left)
+                if self.is_able_to_go_right(board):
+                    self.direction = 'left'
+                else:
+                    self.change_shape(shapes_down)
             case 'left':
-                self.change_shape(shapes)
-                self.direction = 'up'
+                self.change_shape(shapes_up)
+                if self.is_able_to_fall(board) and self.is_able_to_go_right(board):
+                    self.direction = 'up'
+                else:
+                    self.change_shape(shapes_left)
         self.insert_into_board(board, STANDART_INPUT_DELAY)
     
     def rotate_left(self, board: list[list]):
         """
-        This function rotates a Tetris piece to the left and updates its position on the game board.
+        This function rotates the current shape left and updates its direction accordingly.
         
-        :param board: A 2D list representing the game board where the tetromino will be placed
+        :param board: The "board" parameter is a 2D list that represents the game board. Each element in
+        the list represents a cell on the board, and can contain a value indicating the presence of a
+        game piece or be empty. The "rotate_left" method is a function that rotates the current game
+        piece
         :type board: list[list]
         """
         self.remove_from_board(board)
         match self.direction:
             case 'up':
-                self.change_shape(shapes_l)
-                self.direction = 'left'
+                self.change_shape(shapes_left)
+                if self.is_able_to_go_right(board):
+                    self.direction = 'left'
+                else:
+                    self.change_shape(shapes_up)
             case 'left': 
-                self.change_shape(shapes_180)
-                self.direction = 'down'
+                self.change_shape(shapes_down)
+                if self.is_able_to_fall(board) and self.is_able_to_go_right(board):
+                    self.direction = 'down'
+                else:
+                    self.change_shape(shapes_left)
             case 'down':
-                self.change_shape(shapes_r)
-                self.direction = 'right'
+                self.change_shape(shapes_right)
+                if self.is_able_to_go_right(board):
+                    self.direction = 'right'
+                else:
+                    self.change_shape(shapes_down)
             case 'right':
-                self.change_shape(shapes)
-                self.direction = 'up'
+                self.change_shape(shapes_up)
+                if self.is_able_to_fall(board) and self.is_able_to_go_right(board):
+                    self.direction = 'up'
+                else:
+                    self.change_shape(shapes_right)
         self.insert_into_board(board, STANDART_INPUT_DELAY)
     
     def move_down(self, board: list[list]):
@@ -313,5 +341,23 @@ class block:
         for row_idx in range(self.row_position_ptr, self.row_position_ptr + self.height):
             for col_idx in range(self.column_position_ptr, self.column_position_ptr + self.width):
                 if board[row_idx][col_idx][1] > board[row_idx + 1][col_idx][1] > 0:
+                    return False
+        return True
+    
+    def is_able_to_go_right(self, board) -> bool:
+        """
+        This function checks if a game piece can move to the right on a game board without colliding
+        with other pieces.
+        
+        :param board: a 2D list representing the game board, where each element is a tuple containing
+        two values: the first value represents the type of block (e.g. empty, filled, etc.), and the
+        second value represents the serial number of the block (if it is filled)
+        :return: a boolean value, either True or False.
+        """
+        if self.width + self.column_position_ptr >= BOARD_WIDTH:
+            return False
+        for row_idx in range(self.row_position_ptr, self.row_position_ptr + self.height):
+            for col_idx in range(0, self.height):
+                if 0 < board[row_idx][self.column_position_ptr + col_idx][1] < self.serial_num:
                     return False
         return True
