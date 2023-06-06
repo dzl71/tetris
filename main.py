@@ -9,6 +9,11 @@ BLOCK = '[]'
 EMPTY = "  "
 STANDART_DELAY = 1
 
+TETRIS = 800
+TRIPLE_LINE = 500
+DOUBLE_LINE = 300
+ONE_LINE = 100
+
 def create_board() -> list[list]:
     """
     The function creates a two-dimensional list representing a game board with blank tiles and zero
@@ -133,9 +138,22 @@ def main():
                     break
             if block.is_able_to_fall(board): 
                 block.move_down(board)
+
+        deleted_lines_num = 0
         for row in range(block.row_position_ptr, BOARD_HEIGHT):
             if row_is_full(board, row):
                 delete_row(board, row)
+                deleted_lines_num += 1
         block_num += 1
-
+        match deleted_lines_num:
+            case 1:
+                blk.score += ONE_LINE
+            case 2:
+                blk.score += DOUBLE_LINE
+            case 3:
+                blk.score += TRIPLE_LINE
+            case 4:
+                blk.score += TETRIS
+            case _: 
+                blk.score += 0
 main()

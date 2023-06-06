@@ -15,7 +15,10 @@ CLEAR_TERMINAL = 'clear'
 STANDART_INPUT_DELAY = 0.0875
 NO_DELAY = 0
 
-def print_board(board: list[list], delay):
+
+score = 0
+
+def print_board(board: list[list], delay, score):
     """
     The function prints a game board represented by a list of lists with a specified delay between each
     print.
@@ -31,12 +34,13 @@ def print_board(board: list[list], delay):
     for row in board:
         print('|', end='')
         for tile in row:
-            if tile[0] == BLANK:
+            if tile == (BLANK, 0):
                 print(EMPTY, end='')
             else:
                 print(BLOCK, end='')
         print('|')
     print((BOARD_WIDTH  + 1 ) * '--')
+    print(score)
     time.sleep(delay)
 
 # The `shapes` dictionary contains the shapes of the different types of blocks that can appear in the
@@ -169,7 +173,7 @@ class block:
                 if blk == BLOCK_CHAR:
                     board[row_num][col_num] = (BLOCK_CHAR, self.serial_num)
                 col_num += 1
-        print_board(board, delay)
+        print_board(board, delay, score)
                  
             
     def remove_from_board(self, board: list[list]):
@@ -181,16 +185,10 @@ class block:
         :type board: list[list]
         """
         os.system(CLEAR_TERMINAL)
-        row_num = self.row_position_ptr
-        col_num = self.column_position_ptr
-        for blk in self.shape:
-            if blk == '\n':
-                row_num += 1
-                col_num = self.column_position_ptr
-                board[row_num][col_num] = (BLANK, 0)
-            else:
-                board[row_num][col_num] = (BLANK, 0)
-                col_num += 1
+        for row_num in range(self.row_position_ptr, self.row_position_ptr + self.height):
+            for col_num in range(self.column_position_ptr, self.column_position_ptr + self.width):
+                if board[row_num][col_num][1] == self.serial_num:
+                    board[row_num][col_num] = (BLANK, 0)
         
     def rotate_right(self, board: list[list]):
         """
@@ -310,10 +308,10 @@ class block:
         :return: The function `is_able_to_fall` returns a boolean value indicating whether or not the
         current piece can fall further down the board without colliding with any other pieces.
         """
-        if self.row_position_ptr + self.height + 1 > BOARD_HEIGHT:
+        if self.row_position_ptr + self.height >= BOARD_HEIGHT:
             return False
         for row_idx in range(self.row_position_ptr, self.row_position_ptr + self.height):
             for col_idx in range(self.column_position_ptr, self.column_position_ptr + self.width):
-                if board[row_idx][col_idx][1] > board[row_idx + 1][col_idx][1] and board[row_idx + 1][col_idx][1] != 0:
+                if board[row_idx][col_idx][1] > board[row_idx + 1][col_idx][1] > 0:
                     return False
         return True
