@@ -53,12 +53,18 @@ def row_is_full(board: list[list], row: int) -> bool:
             return False
     return True
 
+def row_not_empty(board: list[list[tuple[str, int]]], row_num) -> bool:
+    for tile in board[row_num]:
+        if tile[1] != 0:
+            return True
+    return False
+
 def delete_row(board: list[list], row_num: int):
     # `board[row_num] = board[0]` is replacing the row at index `row_num` with the first row of the
     # board. This is because when a row is deleted, the rows above it need to be shifted down, and the
     # top row needs to be replaced with a new empty row.
     board[row_num] = board[0]
-    while row_num > 0:
+    while row_num > 1 and row_not_empty(board, row_num - 1):
         board[row_num] = board[row_num - 1]
         row_num -= 1
 

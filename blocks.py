@@ -15,20 +15,27 @@ CLEAR_TERMINAL = 'clear'
 STANDART_INPUT_DELAY = 0.0875
 NO_DELAY = 0
 
+class colors:
+    RED = '\x1b[31m'
+    BLUE = '\033[94m'
+    GREEN = '\033[92m'
+    WHITE = '\033[0m'
+
 
 score = 0
+green_blocks: set[int] = set()
+red_blocks: set[int] = set()
+blue_blocks: set[int] = set()
 
 def print_board(board: list[list], delay, score):
     """
-    The function prints a game board represented by a list of lists with a specified delay between each
-    print.
+    This function prints the game board with colored blocks and the current score.
     
-    :param board: A 2D list representing the game board, where each element is a tuple containing
-    information about a tile on the board
+    :param board: a 2D list representing the game board
     :type board: list[list]
-    :param delay: The delay parameter is a number that represents the amount of time (in seconds) that
-    the program should pause before printing the board. This can be useful for creating animations or
-    for slowing down the output so that it is easier to follow
+    :param delay: The delay parameter is the amount of time (in seconds) that the program should wait
+    before printing the board
+    :param score: The current score of the game
     """
     print((BOARD_WIDTH  + 1 ) * '--')
     for row in board:
@@ -37,7 +44,20 @@ def print_board(board: list[list], delay, score):
             if tile == (BLANK, 0):
                 print(EMPTY, end='')
             else:
-                print(BLOCK, end='')
+                if (tile[1] not in green_blocks) and (tile[1] not in red_blocks) and (tile[1] not in blue_blocks):
+                    match tile[1] % 3:
+                        case 1:
+                            green_blocks.add(tile[1])
+                        case 2:
+                            red_blocks.add(tile[1])
+                        case 0:
+                            blue_blocks.add(tile[1])
+                if tile[1] in green_blocks:
+                    print(colors.GREEN + BLOCK + colors.WHITE, end='')
+                elif tile[1] in blue_blocks:
+                    print(colors.BLUE + BLOCK + colors.WHITE, end='')
+                else:
+                    print(colors.RED + BLOCK + colors.WHITE, end='')
         print('|')
     print((BOARD_WIDTH  + 1 ) * '--')
     print(score)
@@ -209,7 +229,7 @@ class block:
                     self.change_shape(shapes_up)
             case 'right': 
                 self.change_shape(shapes_down)
-                if self.is_able_to_fall(board) and self.is_able_to_go_right(board):
+                if self.is_able_to_go_right(board) and self.is_able_to_fall(board):
                     self.direction = 'down'
                 else:
                     self.change_shape(shapes_right)
@@ -221,7 +241,7 @@ class block:
                     self.change_shape(shapes_down)
             case 'left':
                 self.change_shape(shapes_up)
-                if self.is_able_to_fall(board) and self.is_able_to_go_right(board):
+                if self.is_able_to_go_right(board) and self.is_able_to_fall(board):
                     self.direction = 'up'
                 else:
                     self.change_shape(shapes_left)
@@ -247,7 +267,7 @@ class block:
                     self.change_shape(shapes_up)
             case 'left': 
                 self.change_shape(shapes_down)
-                if self.is_able_to_fall(board) and self.is_able_to_go_right(board):
+                if self.is_able_to_go_right(board) and self.is_able_to_fall(board):
                     self.direction = 'down'
                 else:
                     self.change_shape(shapes_left)
@@ -259,7 +279,7 @@ class block:
                     self.change_shape(shapes_down)
             case 'right':
                 self.change_shape(shapes_up)
-                if self.is_able_to_fall(board) and self.is_able_to_go_right(board):
+                if self.is_able_to_go_right(board) and self.is_able_to_fall(board):
                     self.direction = 'up'
                 else:
                     self.change_shape(shapes_right)
