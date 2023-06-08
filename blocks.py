@@ -9,8 +9,7 @@ BLOCK_CHAR = '1'
 
 BLOCK = '[]'
 EMPTY = "  "
-
-CLEAR_TERMINAL = 'clear'
+CLEAR_TERMINAL = 'cls'
 
 STANDART_INPUT_DELAY = 0.0875
 NO_DELAY = 0
@@ -19,6 +18,8 @@ class colors:
     RED = '\x1b[31m'
     BLUE = '\033[94m'
     GREEN = '\033[92m'
+    PURPLE = '\x1b[35m'
+    YELLOW = '\x1b[33m'
     WHITE = '\033[0m'
 
 
@@ -26,6 +27,8 @@ score = 0
 green_blocks: set[int] = set()
 red_blocks: set[int] = set()
 blue_blocks: set[int] = set()
+purple_blocks: set[int] = set()
+yellow_blocks: set[int] = set()
 
 def print_board(board: list[list], delay, score):
     """
@@ -45,17 +48,25 @@ def print_board(board: list[list], delay, score):
                 print(EMPTY, end='')
             else:
                 if (tile[1] not in green_blocks) and (tile[1] not in red_blocks) and (tile[1] not in blue_blocks):
-                    match tile[1] % 3:
+                    match tile[1] % 5:
                         case 1:
                             green_blocks.add(tile[1])
                         case 2:
                             red_blocks.add(tile[1])
                         case 0:
                             blue_blocks.add(tile[1])
+                        case 3:
+                            purple_blocks.add(tile[1])
+                        case 4:
+                            yellow_blocks.add(tile[1])
                 if tile[1] in green_blocks:
                     print(colors.GREEN + BLOCK + colors.WHITE, end='')
                 elif tile[1] in blue_blocks:
                     print(colors.BLUE + BLOCK + colors.WHITE, end='')
+                elif tile[1] in yellow_blocks:
+                    print(colors.YELLOW + BLOCK + colors.WHITE, end='')
+                elif tile[1] in purple_blocks:
+                    print(colors.PURPLE + BLOCK + colors.WHITE, end='')
                 else:
                     print(colors.RED + BLOCK + colors.WHITE, end='')
         print('|')

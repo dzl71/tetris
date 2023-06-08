@@ -24,12 +24,14 @@ def create_board() -> list[list]:
     and an integer representing the block's rotation. The size of the board is determined by the
     constants `BOARD_HEIGHT` and `BOARD_WIDTH`.
     """
-    board = []
-    for _ in range(BOARD_HEIGHT):
-        row = []
-        for tile in range(BOARD_WIDTH):
-            row.append((blk.BLANK, 0))
-        board.append(row)
+    # board = []
+    # for _ in range(BOARD_HEIGHT):
+    #     row = []
+    #     for _ in range(BOARD_WIDTH):
+    #         row.append((blk.BLANK, 0))
+    #     board.append(row)
+    board = [[(blk.BLANK, 0)] * 10 for _ in range(20)]
+
     return board
 
 
@@ -174,4 +176,9 @@ def main():
             fall_delay *= 0.5
         elif blk.score > 1_500_000:
             fall_delay *= 0.01
-main()
+
+print("ours game refresh rate is very high.\nSo if you have epilepsy, or you are sensetive to bright colors and blinking colors,\nplease don't play")
+play = input("continue (insert Y to continue)?\n...> ")
+
+if play == 'Y':
+    main()
