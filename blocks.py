@@ -7,19 +7,20 @@ BOARD_HEIGHT = 20
 BLANK = "0"
 BLOCK_CHAR = '1'
 
-BLOCK = '[]'
 EMPTY = "  "
 CLEAR_TERMINAL = 'cls'
 
 STANDART_INPUT_DELAY = 0.0875
 NO_DELAY = 0
 
+EMPTY_TILE_SERIAL_NUM = 0
+
 class colors:
-    RED = '\x1b[31m'
-    BLUE = '\033[94m'
-    GREEN = '\033[92m'
-    PURPLE = '\x1b[35m'
-    YELLOW = '\x1b[33m'
+    RED = '\x1b[41m'
+    BLUE = '\x1b[44m'
+    GREEN = '\x1b[42m'
+    PURPLE = '\x1b[45m'
+    YELLOW = '\x1b[43m'
     WHITE = '\033[0m'
 
 
@@ -40,12 +41,13 @@ def print_board(board: list[list], delay, score):
     before printing the board
     :param score: The current score of the game
     """
-    print((BOARD_WIDTH  + 1 ) * '--')
+    board_str = ""
+    board_str += (BOARD_WIDTH  + 1 ) * '--' + '\n'
     for row in board:
-        print('|', end='')
+        board_str += '|'
         for tile in row:
-            if tile == (BLANK, 0):
-                print(EMPTY, end='')
+            if tile == (BLANK, EMPTY_TILE_SERIAL_NUM):
+                board_str += EMPTY
             else:
                 if (tile[1] not in green_blocks) and (tile[1] not in red_blocks) and (tile[1] not in blue_blocks):
                     match tile[1] % 5:
@@ -60,18 +62,19 @@ def print_board(board: list[list], delay, score):
                         case 4:
                             yellow_blocks.add(tile[1])
                 if tile[1] in green_blocks:
-                    print(colors.GREEN + BLOCK + colors.WHITE, end='')
+                    board_str += colors.GREEN + EMPTY + colors.WHITE
                 elif tile[1] in blue_blocks:
-                    print(colors.BLUE + BLOCK + colors.WHITE, end='')
+                    board_str += colors.BLUE + EMPTY + colors.WHITE
                 elif tile[1] in yellow_blocks:
-                    print(colors.YELLOW + BLOCK + colors.WHITE, end='')
+                    board_str += colors.YELLOW + EMPTY + colors.WHITE
                 elif tile[1] in purple_blocks:
-                    print(colors.PURPLE + BLOCK + colors.WHITE, end='')
+                    board_str += colors.PURPLE + EMPTY + colors.WHITE
                 else:
-                    print(colors.RED + BLOCK + colors.WHITE, end='')
-        print('|')
-    print((BOARD_WIDTH  + 1 ) * '--')
-    print(score)
+                    board_str += colors.RED + EMPTY + colors.WHITE
+        board_str += '|\n'
+    board_str += (BOARD_WIDTH  + 1 ) * '--' + '\n'
+    board_str += str(score) + '\n'
+    print(board_str)
     time.sleep(delay)
 
 # The `shapes_up` dictionary contains the shapes_up of the different types of blocks that can appear in the
@@ -162,14 +165,13 @@ class block:
         self.name = rnd.choice(list(shapes_up))
         self.shape = shapes_up[self.name][0]
         self.serial_num = serial_num
-        self.falling = True
                 
         self.row_position_ptr = starting_ptr[0]
         self.height = shapes_up[self.name][1][1]
         
         self.column_position_ptr = starting_ptr[1]
         self.width = shapes_up[self.name][1][0]
-        
+    
     def change_shape(self, new_shape: dict[str, tuple[str, tuple[int, int]]]):
         """
         This function changes the shape, width, and height of an object based on a new shape dictionary.
@@ -184,7 +186,7 @@ class block:
         self.width = new_shape[self.name][1][0]
         self.height = new_shape[self.name][1][1]
     
-    def insert_into_board(self, board: list[list], delay):
+    def insert_into_board(self, board: list[list], delay, to_print: bool):
         """
         This function inserts a shape into a board and prints the updated board with a delay.
         
@@ -204,7 +206,9 @@ class block:
                 if blk == BLOCK_CHAR:
                     board[row_num][col_num] = (BLOCK_CHAR, self.serial_num)
                 col_num += 1
-        print_board(board, delay, score)
+        if to_print:
+            os.system(CLEAR_TERMINAL)
+            print_board(board, delay, score)
                  
             
     def remove_from_board(self, board: list[list]):
@@ -215,11 +219,10 @@ class block:
         character representing the block type and an integer representing the block's color
         :type board: list[list]
         """
-        os.system(CLEAR_TERMINAL)
         for row_num in range(self.row_position_ptr, self.row_position_ptr + self.height):
             for col_num in range(self.column_position_ptr, self.column_position_ptr + self.width):
                 if board[row_num][col_num][1] == self.serial_num:
-                    board[row_num][col_num] = (BLANK, 0)
+                    board[row_num][col_num] = (BLANK, EMPTY_TILE_SERIAL_NUM)
         
     def rotate_right(self, board: list[list]):
         """
@@ -256,7 +259,7 @@ class block:
                     self.direction = 'up'
                 else:
                     self.change_shape(shapes_left)
-        self.insert_into_board(board, STANDART_INPUT_DELAY)
+        self.insert_into_board(board, STANDART_INPUT_DELAY, True)
     
     def rotate_left(self, board: list[list]):
         """
@@ -294,9 +297,9 @@ class block:
                     self.direction = 'up'
                 else:
                     self.change_shape(shapes_right)
-        self.insert_into_board(board, STANDART_INPUT_DELAY)
+        self.insert_into_board(board, STANDART_INPUT_DELAY, True)
     
-    def move_down(self, board: list[list]):
+    def move_down(self, board: list[list], to_print: bool):
         """
         This function moves a block down on a game board if it is able to fall.
         
@@ -306,11 +309,9 @@ class block:
         :type board: list[list]
         """
         self.remove_from_board(board)
-        if self.row_position_ptr + self.height < BOARD_HEIGHT:
-            self.falling = self.is_able_to_fall(board)
-        if self.falling:
+        if self.is_able_to_fall(board):
             self.row_position_ptr += 1
-        self.insert_into_board(board, NO_DELAY)
+        self.insert_into_board(board, NO_DELAY, to_print)
     
     def move_left(self, board: list[list]):
         """
@@ -325,13 +326,13 @@ class block:
         self.remove_from_board(board)
         if self.column_position_ptr > 0:
             for row_idx in range(self.row_position_ptr, self.row_position_ptr + self.height):
-                if 0 < board[row_idx][self.column_position_ptr - 1][1] < self.serial_num:
+                if EMPTY_TILE_SERIAL_NUM < board[row_idx][self.column_position_ptr - 1][1] < self.serial_num:
                     able_to_go_left = False
         else:
             able_to_go_left = False
         if able_to_go_left:
             self.column_position_ptr -= 1
-        self.insert_into_board(board, STANDART_INPUT_DELAY)
+        self.insert_into_board(board, STANDART_INPUT_DELAY, True)
 
     def move_right(self, board: list[list]):
         """
@@ -347,13 +348,13 @@ class block:
         self.remove_from_board(board)
         if self.width + self.column_position_ptr < BOARD_WIDTH:
             for row_idx in range(self.row_position_ptr, self.row_position_ptr + self.height):
-                if 0 < board[row_idx][self.column_position_ptr + self.width][1] < self.serial_num:
+                if EMPTY_TILE_SERIAL_NUM < board[row_idx][self.column_position_ptr + self.width][1] < self.serial_num:
                     able_to_move = False
         else:
             able_to_move = False
         if able_to_move:
             self.column_position_ptr += 1
-        self.insert_into_board(board, STANDART_INPUT_DELAY)
+        self.insert_into_board(board, STANDART_INPUT_DELAY, True)
     
     def is_able_to_fall(self, board: list[list]) -> bool:
         """
@@ -371,7 +372,7 @@ class block:
             return False
         for row_idx in range(self.row_position_ptr, self.row_position_ptr + self.height):
             for col_idx in range(self.column_position_ptr, self.column_position_ptr + self.width):
-                if board[row_idx][col_idx][1] > board[row_idx + 1][col_idx][1] > 0:
+                if EMPTY_TILE_SERIAL_NUM < board[row_idx + 1][col_idx][1] < board[row_idx][col_idx][1]:
                     return False
         return True
     
@@ -385,10 +386,28 @@ class block:
         second value represents the serial number of the block (if it is filled)
         :return: a boolean value, either True or False.
         """
-        if self.width + self.column_position_ptr >= BOARD_WIDTH:
+        if self.width + self.column_position_ptr > BOARD_WIDTH:
             return False
         for row_idx in range(self.row_position_ptr, self.row_position_ptr + self.height):
-            for col_idx in range(0, self.height):
-                if 0 < board[row_idx][self.column_position_ptr + col_idx][1] < self.serial_num:
+            for col_idx in range(self.column_position_ptr, self.column_position_ptr + self.width):
+                if EMPTY_TILE_SERIAL_NUM < board[row_idx][col_idx][1] < self.serial_num:
                     return False
         return True
+    
+    def drop_block(self, board: list[list]):
+        """
+        The function drops a block down on a board until it can no longer fall.
+        
+        :param board: A 2D list representing the game board where the block will be dropped. Each element in
+        the list represents a cell on the board and can contain a value indicating the state of the cell
+        (e.g. empty, filled with a block, etc.)
+        :type board: list[list]
+        :param block: The "block" parameter is an instance of a custom-defined class called "block". This
+        class likely represents a block or shape in a game or puzzle, and has methods for moving and
+        checking its position on a game board. The "drop_block" function takes in a game board represented
+        as a
+        :type block: blk.block
+        """
+        while self.is_able_to_fall(board):
+            self.move_down(board, False)
+        self.insert_into_board(board, STANDART_INPUT_DELAY, True)
