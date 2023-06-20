@@ -1,5 +1,5 @@
 {
-    "python.analysis.typeCheckingMode": "basic",
+    "python.analysis.typeCheckingMode": "off",
     "docwriter.progress.trackMethods": true,
     "docwriter.progress.trackClasses": false,
     "docwriter.progress.trackTypes": false

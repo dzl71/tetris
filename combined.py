@@ -224,7 +224,7 @@ class Block:
         """
         for row_num in range(BOARD_HEIGHT):
             for tile_num in range(BOARD_WIDTH):
-                if board[row_num][tile_num] == (BLOCK_CHAR, self.serial_num):
+                if board[row_num][tile_num][1] == self.serial_num:
                     board[row_num][tile_num] = (BLANK, EMPTY_TILE_SERIAL_NUM)
 
     def rotate_right(self, board: list[list]):
@@ -447,7 +447,7 @@ def create_board() -> list[list]:
     return board
 
 
-def row_is_full(board: list[list], row: int) -> bool:
+def row_is_full(row: list) -> bool:
     """
     The function checks if a given row in a board is completely filled with non-zero tiles.
     
@@ -462,8 +462,8 @@ def row_is_full(board: list[list], row: int) -> bool:
     all the tiles in the row have a non-zero value in their second element, the function returns True,
     otherwise it returns False.
     """
-    for tile in board[row]:
-        if tile[1] == 0:
+    for tile in row:
+        if tile[1] == EMPTY_TILE_SERIAL_NUM:
             return False
     return True
 
@@ -471,11 +471,8 @@ def delete_row(board: list[list], row_num: int) -> None:
     # `board[row_num] = board[0]` is replacing the row at index `row_num` with the first row of the
     # board. This is because when a row is deleted, the rows above it need to be shifted down, and the
     # top row needs to be replaced with a new empty row.
-    board[row_num] = EMPTY_ROW
-    for row_num in range(len(board) - 1 , 0, -1):
-        if board[row_num] == EMPTY_ROW:
-            board[row_num] = board[row_num - 1]
-            board[row_num - 1] = EMPTY_ROW
+    board[0:row_num + 1] = board[0:row_num]
+    board.insert(0, EMPTY_ROW)
 
 def movement(block: Block, board: list[list], fall_delay: float):
     start_time = time.perf_counter()
@@ -517,17 +514,22 @@ def main():
     board = create_board()
     block_num = 1
     fall_delay = STARTING_BLOCK_SPEED
-    block = Block(STARTING_POSITION_PTR, block_num)
-    while board[block.height] == EMPTY_ROW:
+    while True:
+        block = Block(STARTING_POSITION_PTR, block_num)
         block.insert_into_board(board, 0, True)
     
         movement_logic(block, board, fall_delay)
 
-        for row in range(block.row_position_ptr, BOARD_HEIGHT):
-            if row_is_full(board, row):
-                delete_row(board, row)
+        for row_idx, row in enumerate(board):
+            if row_is_full(row):
+                delete_row(board, row_idx) 
+                os.system(CLEAR_TERMINAL) 
+                print_board(board)
+                time.sleep(1)
+        if board[block.height] != EMPTY_ROW:
+            break
         block_num += 1
-        block = Block(STARTING_POSITION_PTR, block_num)
+        
 
 print("ours game refresh rate is very high.\nSo if you have epilepsy, or you are sensetive to bright colors and blinking colors,\nplease don't play")
 play = input("continue (insert Y to continue)?\n...> ")
