@@ -63,7 +63,7 @@ def delete_row(board: list[list], row_num: int):
     # board. This is because when a row is deleted, the rows above it need to be shifted down, and the
     # top row needs to be replaced with a new empty row.
     board[row_num] = EMPTY_ROW
-    while row_num > 1 and board[row_num - 1] != EMPTY_ROW:
+    while row_num > 0 :
         board[row_num] = board[row_num - 1]
         board[row_num - 1] = EMPTY_ROW
         row_num -= 1
